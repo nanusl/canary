@@ -3,7 +3,11 @@ package com.dwarf.canary.zk;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.utils.CloseableUtils;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,14 +108,41 @@ public class ZkClient {
 	}
 	
 	public void close(){
+		CloseableUtils.closeQuietly(this.client);
 		this.client.close();
+	}
+	
+	public void addListener(String path, PathChildrenCacheListener listener){
+		PathChildrenCache cache = new PathChildrenCache(this.client, path, true);
+		try {
+			cache.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		cache.getListenable().addListener(listener);
 	}
 	
 	
 	public static void main(String[] args) {
 		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
 		ZkClient zkClient = new ZkClient("120.25.163.237:2181", retryPolicy);
-		zkClient.delete("/wangzx");
+		
+		PathChildrenCacheListener listener = new PathChildrenCacheListener(){
+
+			@Override
+			public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+				if(event.getType() == PathChildrenCacheEvent.Type.CHILD_ADDED){
+					System.out.println("add event");
+				}
+			}
+			
+		};
+		zkClient.addListener("/", listener);
+		try {
+			Thread.sleep(Integer.MAX_VALUE);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		zkClient.close();
 	}
 	
