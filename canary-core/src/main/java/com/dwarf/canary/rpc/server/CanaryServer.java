@@ -1,5 +1,10 @@
 package com.dwarf.canary.rpc.server;
 
+import com.dwarf.canary.codec.ProtoStuffDecoder;
+import com.dwarf.canary.codec.ProtoStuffEncoder;
+import com.dwarf.canary.rpc.TcpRequest;
+import com.dwarf.canary.rpc.TcpResponse;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -27,7 +32,9 @@ public class CanaryServer {
              .childHandler(new ChannelInitializer<SocketChannel>() {
                  @Override
                  public void initChannel(SocketChannel ch) throws Exception {
-                     //ch.pipeline().addLast(new DiscardServerHandler());
+                     ch.pipeline().addLast(new ProtoStuffDecoder(TcpRequest.class));
+                     ch.pipeline().addLast(new ProtoStuffEncoder(TcpResponse.class));
+                     ch.pipeline().addLast(new CanaryServerHandler());
                  }
              })
              .option(ChannelOption.SO_BACKLOG, 128) 
