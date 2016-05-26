@@ -17,7 +17,7 @@ public class CanaryClient {
 	
 	private int port;
 	private String host;
-	private StringBuilder message = new StringBuilder();
+	private TcpResponse response = new TcpResponse();
 	
 	public CanaryClient(String host, int port){
 		this.host = host;
@@ -35,14 +35,14 @@ public class CanaryClient {
                  protected void initChannel(SocketChannel ch) throws Exception {
                 	 ch.pipeline().addLast(new ProtoStuffEncoder(TcpRequest.class));
                 	 ch.pipeline().addLast(new ProtoStuffDecoder(TcpResponse.class));
-                	 ch.pipeline().addLast(new CanaryClientHandler(message));
+                	 ch.pipeline().addLast(new CanaryClientHandler(response));
                  }
              });
 
             ChannelFuture f = b.connect(this.host, this.port);
             f.channel().writeAndFlush(request);
             f.channel().closeFuture().sync();
-            return message;
+            return response.getResult();
         }catch(InterruptedException e){
         	e.printStackTrace();
         } finally {
@@ -54,7 +54,7 @@ public class CanaryClient {
 	public static void main(String[] args) {
 		CanaryClient client = new CanaryClient("127.0.0.1", 8089);
 		TcpRequest request = new TcpRequest();
-		request.setRequestID(100);
+		request.setRequestID("100");
 		request.setInterfaceName("HelloService");
 		request.setMethodName("say");
 		client.connect(request);

@@ -7,10 +7,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 public class CanaryClientHandler extends SimpleChannelInboundHandler<TcpResponse> {
 	
-	public StringBuilder message;
+	public TcpResponse response;
 	
-	public CanaryClientHandler(StringBuilder result){
-		this.message = result;
+	public CanaryClientHandler(TcpResponse result){
+		this.response = result;
 	}
 	
 	@Override
@@ -24,8 +24,8 @@ public class CanaryClientHandler extends SimpleChannelInboundHandler<TcpResponse
 	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		TcpResponse response = (TcpResponse)msg;
-		message.append(response.getResult());
+		TcpResponse tcpResponse = (TcpResponse)msg; 
+		this.response.setResult(tcpResponse.getResult());
 		ctx.close();
 	}
 	

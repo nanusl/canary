@@ -7,15 +7,16 @@ package com.dwarf.canary.rpc;
  */
 public class TcpRequest {
 	
-	private long requestID;
+	private String requestID;
 	private String interfaceName;
 	private String methodName;
-	private Object[] parameters;
+	private Class<?>[] parameterTypes;
+    private Object[] parameters;
 	
-	public long getRequestID() {
+	public String getRequestID() {
 		return requestID;
 	}
-	public void setRequestID(long requestID) {
+	public void setRequestID(String requestID) {
 		this.requestID = requestID;
 	}
 	public String getInterfaceName() {
@@ -36,7 +37,11 @@ public class TcpRequest {
 	public void setParameters(Object[] parameters) {
 		this.parameters = parameters;
 	}
-	
-	
+	public Class<?>[] getParameterTypes() {
+		return parameterTypes;
+	}
+	public void setParameterTypes(Class<?>[] parameterTypes) {
+		this.parameterTypes = parameterTypes;
+	}
 	
 }

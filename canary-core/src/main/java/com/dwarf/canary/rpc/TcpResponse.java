@@ -3,7 +3,7 @@ package com.dwarf.canary.rpc;
 public class TcpResponse {
 	
 	private Object result;
-	private long requestID;
+	private String requestID;
 	
 	public Object getResult() {
 		return result;
@@ -11,10 +11,10 @@ public class TcpResponse {
 	public void setResult(Object result) {
 		this.result = result;
 	}
-	public long getRequestID() {
+	public String getRequestID() {
 		return requestID;
 	}
-	public void setRequestID(long requestID) {
+	public void setRequestID(String requestID) {
 		this.requestID = requestID;
 	}
 	

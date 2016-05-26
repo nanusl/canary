@@ -25,11 +25,13 @@ public class CanaryServerHandler extends SimpleChannelInboundHandler<TcpRequest>
 		String methodName = request.getMethodName();
 		
 		TcpResponse response = new TcpResponse();
-		/*ProxyInvocationHandler handler = new ProxyInvocationHandler(new HelloServiceImpl());
-		Object object = Proxy.newProxyInstance(HelloService.class.getClassLoader(), new Class<?>[]{HelloService.class}, handler);*/
 		
-		response.setRequestID(100);
-		response.setResult("123");
+		response.setRequestID(request.getRequestID());
+		if(methodName.equals("say")){
+			response.setResult("say what!!!");
+		}else{
+			response.setResult("do what!!!");
+		}
 		ctx.writeAndFlush(response);
 	}
 	
